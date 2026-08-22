@@ -1,31 +1,37 @@
 import React, { Component, ErrorInfo, ReactNode } from 'react';
 import { AlertTriangle, RefreshCw, ShieldCheck } from 'lucide-react';
 
-export interface Props {
+export interface ErrorBoundaryProps {
   children: ReactNode;
   fallback?: ReactNode;
 }
 
-export interface State {
+export interface ErrorBoundaryState {
   hasError: boolean;
   error: Error | null;
 }
 
-export class ErrorBoundary extends Component<Props, State> {
-  override state: State = {
-    hasError: false,
-    error: null
-  };
+export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
+  declare props: ErrorBoundaryProps;
+  declare state: ErrorBoundaryState;
 
-  static getDerivedStateFromError(error: Error): State {
+  constructor(props: ErrorBoundaryProps) {
+    super(props);
+    this.state = {
+      hasError: false,
+      error: null
+    };
+  }
+
+  static getDerivedStateFromError(error: Error): ErrorBoundaryState {
     return { hasError: true, error };
   }
 
-  override componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+  componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     console.error('[LUMINA ERROR BOUNDARY]', error, errorInfo);
   }
 
-  override render() {
+  render() {
     if (this.state.hasError) {
       if (this.props.fallback) {
         return this.props.fallback;
