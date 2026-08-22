@@ -1,0 +1,6 @@
+{
+  "name": "Lumina Finance",
+  "description": "AI-driven personal finance advisor combining budget analysis, emergency fund verification, risk profiling, portfolio allocation, stock trend analysis, and strategic recommendations.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

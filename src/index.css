@@ -1,0 +1,165 @@
+@import "tailwindcss";
+
+@layer base {
+  body {
+    background-color: #09090b;
+    color: #fafafa;
+    font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+/* Custom scrollbar for sleek dark layout */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #09090b;
+}
+::-webkit-scrollbar-thumb {
+  background: #27272a;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #3f3f46;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Global Light Theme Overrides for High Contrast & Readable Typography */
+html.light-theme, .light-theme {
+  background-color: #f8fafc !important;
+  color: #0f172a !important;
+}
+
+.light-theme body {
+  background-color: #f8fafc !important;
+  color: #0f172a !important;
+}
+
+/* Sidebar intentionally crisp in both themes */
+.light-theme aside {
+  background-color: #08090d !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+  color: #cbd5e1 !important;
+}
+
+.light-theme aside * {
+  color: inherit;
+}
+
+.light-theme aside button {
+  color: #94a3b8;
+}
+
+.light-theme aside button:hover {
+  color: #ffffff !important;
+  background-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+/* Keep Hero Section Intentionally Dark Gradient in Light Mode */
+.light-theme section.hero-section,
+.light-theme section.bg-gradient-to-br {
+  background: linear-gradient(to bottom right, #0f172a, #09090b, #1e1b4b) !important;
+  color: #ffffff !important;
+}
+
+.light-theme section.bg-gradient-to-br h1,
+.light-theme section.bg-gradient-to-br h1 span,
+.light-theme section.bg-gradient-to-br p,
+.light-theme section.bg-gradient-to-br span {
+  color: #ffffff;
+}
+
+.light-theme section.bg-gradient-to-br p {
+  color: #e2e8f0 !important;
+}
+
+/* Light Mode Card & Text Utility Enhancements */
+.light-theme .copilot-drawer {
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+  border-left-color: #e2e8f0 !important;
+}
+
+.light-theme .copilot-header {
+  background-color: #f8fafc !important;
+  border-bottom-color: #e2e8f0 !important;
+}
+
+.light-theme .copilot-header-title {
+  color: #0f172a !important;
+}
+
+.light-theme .copilot-header-subtitle {
+  color: #64748b !important;
+}
+
+.light-theme .copilot-bot-card {
+  background-color: #ffffff !important;
+  border-color: #e2e8f0 !important;
+  color: #0f172a !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05) !important;
+}
+
+.light-theme .copilot-calc-box {
+  background-color: #f8fafc !important;
+  border-color: #e2e8f0 !important;
+}
+
+.light-theme .copilot-calc-card {
+  background-color: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+}
+
+.light-theme .copilot-metric-label {
+  color: #64748b !important;
+}
+
+.light-theme .copilot-metric-val {
+  color: #0f172a !important;
+}
+
+/* Status color & alert banner contrast fixes for Light Mode */
+.light-theme .text-rose-200,
+.light-theme .text-rose-300 {
+  color: #9f1239 !important;
+}
+
+.light-theme .text-rose-400,
+.light-theme .text-rose-500 {
+  color: #be123c !important;
+}
+
+.light-theme .text-amber-200,
+.light-theme .text-amber-300 {
+  color: #92400e !important;
+}
+
+.light-theme .text-amber-400,
+.light-theme .text-amber-500 {
+  color: #b45309 !important;
+}
+
+.light-theme .text-emerald-200,
+.light-theme .text-emerald-300 {
+  color: #065f46 !important;
+}
+
+.light-theme .text-emerald-400,
+.light-theme .text-emerald-500 {
+  color: #047857 !important;
+}
+
+.light-theme .text-blue-200,
+.light-theme .text-blue-300 {
+  color: #1e40af !important;
+}
