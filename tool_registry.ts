@@ -458,7 +458,11 @@ export const getExpenseAnalysisTool: AgentTool = {
     let total = 0;
 
     if (hasDict) {
-      total = Object.values(rawDict).reduce((a: number, b: any): number => a + (parseFloat(String(b)) || 0), 0);
+      let sum = 0;
+      for (const val of Object.values(rawDict)) {
+        sum += parseFloat(String(val)) || 0;
+      }
+      total = sum;
       breakdown = Object.entries(rawDict).map(([cat, amt]) => {
         const val = parseFloat(amt as string) || 0;
         return {
