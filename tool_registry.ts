@@ -23,21 +23,29 @@ export interface AgentTool<TInput = any, TOutput = any> {
 // HELPER: Financial Profile Extraction
 // ---------------------------------------------------------------------------
 export function extractFinancialProfile(userContext: any) {
-  const income = Math.max(1, parseFloat(userContext?.income) || 65000);
-  const expenses = Math.max(0, parseFloat(userContext?.expenses) || 38000);
-  const savings = Math.max(0, parseFloat(userContext?.savings) || (income - expenses));
-  const reserve = Math.max(0, parseFloat(userContext?.currentLiquidReserve) || 180000);
-  const monthsCovered = expenses > 0 ? reserve / expenses : 12;
+  const isDemoMode = Boolean(userContext?.isDemoMode);
+  
+  const rawInc = userContext?.income !== undefined && userContext?.income !== null ? parseFloat(userContext.income) : null;
+  const rawExp = userContext?.expenses !== undefined && userContext?.expenses !== null ? parseFloat(userContext.expenses) : null;
+  const rawRes = userContext?.currentLiquidReserve !== undefined && userContext?.currentLiquidReserve !== null ? parseFloat(userContext.currentLiquidReserve) : null;
+
+  const income = rawInc !== null ? Math.max(0, rawInc) : (isDemoMode ? 65000 : 0);
+  const expenses = rawExp !== null ? Math.max(0, rawExp) : (isDemoMode ? 38000 : 0);
+  const savings = (income > 0 || expenses > 0) ? Math.max(0, income - expenses) : 0;
+  const reserve = rawRes !== null ? Math.max(0, rawRes) : (isDemoMode ? 180000 : 0);
+  const monthsCovered = expenses > 0 ? reserve / expenses : 0;
+  const hasVerifiedData = isDemoMode || (rawInc !== null && rawInc > 0) || (rawExp !== null && rawExp > 0);
 
   return {
     income,
     expenses,
     savings,
-    savingsRate: Math.round((savings / income) * 100 * 10) / 10,
+    savingsRate: income > 0 ? Math.round((savings / income) * 100 * 10) / 10 : 0,
     reserve,
     monthsCovered: Math.round(monthsCovered * 10) / 10,
     age: Math.max(18, parseInt(userContext?.age) || 28),
-    riskPreference: userContext?.riskPreference || "High"
+    riskPreference: userContext?.riskPreference || "High",
+    hasVerifiedData
   };
 }
 
@@ -443,19 +451,40 @@ export const getExpenseAnalysisTool: AgentTool = {
   validate: () => ({ valid: true }),
   execute: async (_, userContext) => {
     const profile = extractFinancialProfile(userContext);
-    const expensesDict = userContext?.expensesDict || { housing_utilities: 14000, food_groceries: 9500, transportation: 4500, healthcare: 3000, entertainment_misc: 7000 };
-    const total = Object.values(expensesDict).reduce((a: number, b: any) => a + (parseFloat(b as string) || 0), 0);
+    const rawDict = userContext?.expensesDict;
+    const hasDict = rawDict && typeof rawDict === 'object' && Object.keys(rawDict).length > 0;
+    
+    let breakdown: Array<{ category: string; amount: number; pct: number }> = [];
+    let total = 0;
 
-    const breakdown = Object.entries(expensesDict).map(([cat, amt]) => {
-      const val = parseFloat(amt as string) || 0;
-      return { category: cat.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase()), amount: val, pct: profile.income > 0 ? Math.round((val / profile.income) * 100) : 0 };
-    }).sort((a, b) => b.amount - a.amount);
+    if (hasDict) {
+      total = Object.values(rawDict).reduce((a: number, b: any) => a + (parseFloat(b as string) || 0), 0);
+      breakdown = Object.entries(rawDict).map(([cat, amt]) => {
+        const val = parseFloat(amt as string) || 0;
+        return {
+          category: cat.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase()),
+          amount: val,
+          pct: profile.income > 0 ? Math.round((val / profile.income) * 100) : 0
+        };
+      }).sort((a, b) => b.amount - a.amount);
+    } else {
+      total = profile.expenses;
+      if (total > 0) {
+        breakdown = [
+          { category: "Housing Utilities", amount: Math.round(total * 0.40), pct: profile.income > 0 ? Math.round((total * 0.40 / profile.income) * 100) : 0 },
+          { category: "Food Groceries", amount: Math.round(total * 0.25), pct: profile.income > 0 ? Math.round((total * 0.25 / profile.income) * 100) : 0 },
+          { category: "Entertainment Misc", amount: Math.round(total * 0.18), pct: profile.income > 0 ? Math.round((total * 0.18 / profile.income) * 100) : 0 },
+          { category: "Transportation", amount: Math.round(total * 0.12), pct: profile.income > 0 ? Math.round((total * 0.12 / profile.income) * 100) : 0 },
+          { category: "Healthcare", amount: Math.round(total * 0.05), pct: profile.income > 0 ? Math.round((total * 0.05 / profile.income) * 100) : 0 },
+        ];
+      }
+    }
 
     return {
       monthlyIncome: profile.income,
       totalExpenses: total,
-      topCategory: breakdown[0]?.category || "Housing",
-      topAmount: breakdown[0]?.amount || 14000,
+      topCategory: breakdown[0]?.category || "Housing Utilities",
+      topAmount: breakdown[0]?.amount || 0,
       categories: breakdown
     };
   }

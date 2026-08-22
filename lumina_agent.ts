@@ -749,25 +749,41 @@ Consider setting up a gradual 6-month reallocation plan to transition toward thi
           { label: "Compare Risk Impact", action: "PROMPT", prompt: "Would that increase or decrease my overall risk?" }
         ];
       } else if (intent === "BUDGET") {
-        const inc = calculations.monthlyIncome || userContext?.income || 65000;
-        const exp = calculations.totalExpenses || userContext?.expenses || 38000;
-        const net = calculations.netMonthlySavings ?? (inc - exp);
-        const rate = inc > 0 ? ((net / inc) * 100).toFixed(1) : "0.0";
+        const hasVerifiedData = userContext?.hasVerifiedData || Boolean(userContext?.income || userContext?.expenses);
+        const inc = calculations.monthlyIncome || parseFloat(userContext?.income) || (userContext?.isDemoMode ? 65000 : 0);
+        const exp = calculations.totalExpenses || parseFloat(userContext?.expenses) || (userContext?.isDemoMode ? 38000 : 0);
 
-        answerText = `Your current monthly cash flow is positive.
+        if (!hasVerifiedData && inc <= 0 && exp <= 0) {
+          answerText = `I can help optimize your cash flow, but I don't have enough verified income/expense data yet. Please add your monthly income and expenses in the Money hub or profile settings.`;
+          actions = [
+            { label: "Add Income & Expenses", action: "NAVIGATE", target: "money" }
+          ];
+        } else {
+          const net = inc - exp;
+          const rate = inc > 0 ? ((net / inc) * 100).toFixed(1) : "0.0";
 
-You earn **${formatINR(inc)}** per month and spend **${formatINR(exp)}**, leaving approximately **${formatINR(net)}** available after expenses.
+          answerText = `Your current monthly cash flow analysis:
 
-That means you're currently saving about **${rate}%** of your monthly income.
+### CASH FLOW INSIGHT
+
+• **Monthly Income:** ${formatINR(inc)}
+• **Monthly Expenses:** ${formatINR(exp)}
+• **Monthly Surplus:** **${formatINR(net)}**
+• **Savings Rate:** **${rate}%**
 
 ### WHAT THIS MEANS
 
-• **Cash Flow Health:** Your cash flow is healthy because your income exceeds your essential living expenses.
-• **Surplus Protection:** Your largest opportunity is to protect the ${formatINR(net)} monthly surplus rather than expanding discretionary spending.
+• **Cash Flow Position:** You earn ${formatINR(inc)} per month and spend ${formatINR(exp)}, leaving ${formatINR(net)} available after expenses (${rate}% savings rate).
+• **Surplus Protection:** Your priority is to consistently capture and deploy the ${formatINR(net)} monthly surplus before discretionary spending.
 
-### RECOMMENDED NEXT STEP
+### RECOMMENDED NEXT STEPS
 
-Set aside the ${formatINR(net)} monthly surplus first, then allocate it toward your emergency fund and priority financial goals.`;
+Consider allocating your ${formatINR(net)} monthly surplus systematically towards your emergency liquid reserve and long-term goals.`;
+          actions = [
+            { label: "Analyze Expense Breakdown", action: "PROMPT", prompt: "Can you analyze my monthly expense breakdown into categories and show where I can save the most?" },
+            { label: "Build Savings Plan", action: "PROMPT", prompt: "What if I save another ₹500 per month?" }
+          ];
+        }
       } else if (intent === "GOAL") {
         const target = calculations.targetAmount || 1500000;
         const req = calculations.requiredMonthlyContribution || 33333;
