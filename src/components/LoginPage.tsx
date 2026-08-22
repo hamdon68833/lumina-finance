@@ -110,12 +110,19 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onSuccess }) => {
   };
 
   const handleGoogleSignIn = async () => {
+    if (loading) return;
     setErrorMsg('');
     setLoading(true);
     try {
-      await signInWithGoogle();
-      if (onSuccess) onSuccess();
+      const resUser = await signInWithGoogle();
+      if (resUser && onSuccess) onSuccess();
     } catch (err: any) {
+      console.error('[GOOGLE LOGIN DEV ERROR]', {
+        code: err?.code,
+        message: err?.message,
+        customData: err?.customData,
+        email: err?.email
+      });
       setErrorMsg(getFriendlyErrorMessage(err));
     } finally {
       setLoading(false);
