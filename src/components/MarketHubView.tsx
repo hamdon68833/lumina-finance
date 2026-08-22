@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { TrendingUp, Globe, Sparkles, Newspaper, ArrowUpRight, ShieldAlert, BarChart2, Info } from 'lucide-react';
 import { WatchlistItem } from '../types';
 import { formatCurrency } from '../utils/formatters';
+import { CompanyLogo } from './CompanyLogo';
+import { NextBestActionBanner } from './NextBestActionBanner';
 import { CompanyLogoService } from '../../company_logo_service';
 import { WatchlistEngine } from '../../watchlist_engine';
 import { AssetDetailModal } from './AssetDetailModal';
@@ -97,11 +99,7 @@ How does ${item.name} (${item.ticker}) impact my portfolio risk and overall fina
             {indianIndices.map((idx, i) => (
               <div key={i} className="bg-slate-50 dark:bg-slate-800/60 p-4 rounded-xl border border-slate-200 dark:border-slate-700/50 space-y-1">
                 <div className="flex items-center gap-2">
-                  <img
-                    src={CompanyLogoService.getLogoUrl(idx.symbol)}
-                    alt={idx.name}
-                    className="w-7 h-7 rounded-lg object-contain bg-white dark:bg-slate-800 p-0.5 border border-slate-200 dark:border-slate-700"
-                  />
+                  <CompanyLogo ticker={idx.symbol} name={idx.name} size="sm" />
                   <span className="text-xs font-bold text-slate-900 dark:text-white block">{idx.name}</span>
                 </div>
                 <div className="text-xl font-extrabold text-slate-900 dark:text-white font-mono">
@@ -131,11 +129,7 @@ How does ${item.name} (${item.ticker}) impact my portfolio risk and overall fina
             {usIndices.map((idx, i) => (
               <div key={i} className="bg-slate-50 dark:bg-slate-800/60 p-4 rounded-xl border border-slate-200 dark:border-slate-700/50 space-y-1">
                 <div className="flex items-center gap-2">
-                  <img
-                    src={CompanyLogoService.getLogoUrl(idx.symbol)}
-                    alt={idx.name}
-                    className="w-7 h-7 rounded-lg object-contain bg-white dark:bg-slate-800 p-0.5 border border-slate-200 dark:border-slate-700"
-                  />
+                  <CompanyLogo ticker={idx.symbol} name={idx.name} size="sm" />
                   <span className="text-xs font-bold text-slate-900 dark:text-white block">{idx.name}</span>
                 </div>
                 <div className="text-xl font-extrabold text-slate-900 dark:text-white font-mono">
@@ -193,14 +187,7 @@ How does ${item.name} (${item.ticker}) impact my portfolio risk and overall fina
                     {/* Logo + Ticker + Name */}
                     <td className="py-3.5 px-3">
                       <div className="flex items-center gap-3">
-                        <img
-                          src={logoUrl}
-                          alt={item.ticker}
-                          className="w-9 h-9 rounded-xl object-contain bg-white dark:bg-slate-800 p-1 border border-slate-200 dark:border-slate-700 shrink-0 group-hover:scale-105 transition-transform"
-                          onError={(e) => {
-                            (e.target as HTMLImageElement).src = CompanyLogoService.getLogoUrl("??");
-                          }}
-                        />
+                        <CompanyLogo ticker={item.ticker} name={item.name} size="sm" />
                         <div>
                           <div className="flex items-center gap-1.5">
                             <span className="font-extrabold text-slate-900 dark:text-white text-xs">{item.ticker}</span>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { TrendingUp, Sun, Moon, Bell, FileText, Search, Sparkles, LogOut, User as UserIcon, Shield, ChevronDown } from 'lucide-react';
+import { TrendingUp, Sun, Moon, Bell, FileText, Search, Sparkles, LogOut, User as UserIcon, Shield, ChevronDown, BookOpen } from 'lucide-react';
 import { User } from '../types';
 
 interface HeaderProps {
@@ -17,6 +17,7 @@ interface HeaderProps {
   onOpenCopilot?: () => void;
   onOpenNotifications?: () => void;
   onOpenDocumentIntelligence?: () => void;
+  onOpenGlossary?: () => void;
   unreadAlertCount?: number;
 }
 
@@ -35,6 +36,7 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenCopilot,
   onOpenNotifications,
   onOpenDocumentIntelligence,
+  onOpenGlossary,
   unreadAlertCount = 0,
 }) => {
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
@@ -156,6 +158,18 @@ export const Header: React.FC<HeaderProps> = ({
             >
               <span className={`w-2 h-2 rounded-full ${isDemoMode ? 'bg-amber-500 animate-pulse' : 'bg-emerald-500'}`} />
               <span>{isDemoMode ? 'DEMO MODE' : 'REAL DATA'}</span>
+            </button>
+          )}
+
+          {/* Beginner Glossary Button */}
+          {onOpenGlossary && (
+            <button
+              onClick={onOpenGlossary}
+              title="Beginner Financial Glossary"
+              className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-indigo-50 dark:bg-indigo-500/10 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-500/20 hover:bg-indigo-100 dark:hover:bg-indigo-500/20 transition"
+            >
+              <BookOpen className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+              <span>Glossary</span>
             </button>
           )}
 

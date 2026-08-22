@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { PieChart, ShieldAlert, Sparkles, Plus, FileUp, MessageSquare, TrendingUp, TrendingDown } from 'lucide-react';
 import { formatCurrency } from '../../currency_formatter';
+import { CompanyLogo } from './CompanyLogo';
+import { NextBestActionBanner } from './NextBestActionBanner';
 import { CompanyLogoService } from '../../company_logo_service';
-import { COMPANY_REGISTRY } from '../../company_registry';
 
 interface InvestmentsHubViewProps {
   userContext: any;
@@ -175,14 +176,7 @@ export const InvestmentsHubView: React.FC<InvestmentsHubViewProps> = ({
                 return (
                   <div key={i} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/50 gap-3">
                     <div className="flex items-center gap-3">
-                      <img
-                        src={logoUrl}
-                        alt={inv.ticker}
-                        className="w-10 h-10 rounded-xl object-contain bg-white p-1 border border-slate-200 dark:border-slate-700 shrink-0"
-                        onError={(e) => {
-                          (e.target as HTMLImageElement).src = CompanyLogoService.getLogoUrl("??");
-                        }}
-                      />
+                      <CompanyLogo ticker={inv.ticker} name={inv.name} size="md" />
                       <div>
                         <div className="flex items-center gap-2">
                           <span className="text-sm font-bold text-slate-900 dark:text-white">{inv.name || inv.ticker}</span>

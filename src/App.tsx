@@ -18,6 +18,7 @@ import { MarketAlertPanel } from './components/MarketAlertPanel';
 import { AlertActionPanel } from './components/AlertActionPanel';
 import { FinancialEducationModal } from './components/FinancialEducationModal';
 import { DocumentIntelligenceModal } from './components/DocumentIntelligenceModal';
+import { BeginnerGlossaryModal } from './components/BeginnerGlossaryModal';
 import { BudgetData, RiskData, StockData } from './types';
 import { SmartAlert, UserAlertPreferences, DEFAULT_USER_PREFERENCES } from '../alert_rules';
 import { useAuth } from './AuthContext';
@@ -39,6 +40,7 @@ export default function App() {
   const [isVivaOpen, setIsVivaOpen] = useState(false);
   const [isEducationOpen, setIsEducationOpen] = useState(false);
   const [isDocumentOpen, setIsDocumentOpen] = useState(false);
+  const [isGlossaryOpen, setIsGlossaryOpen] = useState(false);
 
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
@@ -436,9 +438,14 @@ export default function App() {
           activeHubTitle={hubMeta[activeHub]?.title}
           activeHubSubtitle={hubMeta[activeHub]?.subtitle}
           onOpenSearch={() => setIsCommandPaletteOpen(true)}
-          onOpenCopilot={() => setIsCopilotOpen(true)}
+          onOpenCopilot={(prompt) => {
+            if (typeof prompt === 'string') setCopilotInitialPrompt(prompt);
+            else setCopilotInitialPrompt('');
+            setIsCopilotOpen(true);
+          }}
           onOpenNotifications={() => setIsNotificationCenterOpen(true)}
           onOpenDocumentIntelligence={() => setIsDocumentOpen(true)}
+          onOpenGlossary={() => setIsGlossaryOpen(true)}
           unreadAlertCount={unreadAlertCount}
         />
 
@@ -502,6 +509,12 @@ export default function App() {
       <DocumentIntelligenceModal
         isOpen={isDocumentOpen}
         onClose={() => setIsDocumentOpen(false)}
+      />
+
+      {/* Beginner Financial Glossary Modal */}
+      <BeginnerGlossaryModal
+        isOpen={isGlossaryOpen}
+        onClose={() => setIsGlossaryOpen(false)}
       />
 
       {/* Proactive Notification Center Slide-over */}

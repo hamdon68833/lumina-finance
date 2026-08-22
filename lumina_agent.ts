@@ -796,23 +796,36 @@ Consider evaluating if 0% interest EMI options are available to preserve liquid 
 Consider running a rebalancing simulation before making any portfolio adjustments.`;
         }
       } else if (intent === "PORTFOLIO_SIMULATION") {
-        answerText = `If you reduce your NVDA allocation from 66.7% to **15.0%**, your portfolio composition changes as follows:
+        answerText = `### DIRECT ANSWER
 
-### SIMULATED ALLOCATION
+Not yet. Based on your current portfolio, your priority should be rebalancing your high concentration risk rather than buying additional NVDA shares.
 
-• **Current NVDA Weight:** 66.7% (₹3,00,000)
-• **Target NVDA Weight:** 15.0% (₹67,500)
-• **Capital Reallocated:** **₹2,32,500**
+### YOUR NUMBERS
+
+• **Current NVDA Weight:** 66.7% (${formatINR(300000)})
+• **Target NVDA Weight:** 15.0% (${formatINR(67500)})
+• **Capital to Reallocate:** **${formatINR(232500)}**
 • **Simulated Asset Mix:** NVDA: 15.0%, AAPL: 33.3%, Reallocated Index/Debt: 51.7%
 
 ### WHAT THIS MEANS
 
-• **Risk Reduction:** Your portfolio sensitivity to single-stock NVDA earnings volatility is reduced by nearly **77%**.
-• **Sharpe Improvement:** Diversifying the ₹2,32,500 capital into broad market index funds improves your risk-adjusted return profile.
+Your portfolio is highly concentrated in one single company. Even if NVDA has strong technical momentum, a sharp price decline would disproportionately damage your total net worth.
 
-### RECOMMENDED NEXT STEP
+### RECOMMENDED ACTION
 
-Consider setting up a gradual 6-month reallocation plan to transition toward this 15.0% target.`;
+Gradually rebalance ${formatINR(232500)} out of NVDA over a 6-month period into broad market index funds and fixed income.
+
+### WHY THIS ACTION
+
+Spreading capital across multiple asset classes reduces single-stock concentration risk by nearly **77%** without pulling your money out of long-term market growth.
+
+### RISK / CAUTION
+
+Rebalancing does not eliminate general market risk; broad market index funds can still fluctuate during market downturns.
+
+### NEXT STEP
+
+Review the target allocation in Investments → Portfolio Rebalancer.`;
         actions = [
           { label: "View Investments", action: "NAVIGATE", target: "investments" },
           { label: "Compare Risk Impact", action: "PROMPT", prompt: "Would that increase or decrease my overall risk?" }

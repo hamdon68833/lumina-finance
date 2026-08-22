@@ -5,6 +5,14 @@ export class WatchlistEngine {
     const rawHoldings = userContext?.portfolioHoldings || userContext?.investments || userContext?.portfolio?.holdings || [];
     const totalVal = rawHoldings.reduce((sum: number, h: any) => sum + (parseFloat(h.value) || 0), 0);
 
+    const rawInc = userContext?.income !== undefined && userContext?.income !== null ? parseFloat(userContext.income) : null;
+    const rawExp = userContext?.expenses !== undefined && userContext?.expenses !== null ? parseFloat(userContext.expenses) : null;
+    const rawRes = userContext?.currentLiquidReserve !== undefined && userContext?.currentLiquidReserve !== null ? parseFloat(userContext.currentLiquidReserve) : null;
+    
+    const expenses = rawExp !== null ? Math.max(0, rawExp) : (userContext?.isDemoMode ? 38000 : 0);
+    const reserve = rawRes !== null ? Math.max(0, rawRes) : (userContext?.isDemoMode ? 180000 : 0);
+    const monthsCovered = expenses > 0 ? reserve / expenses : 0;
+
     const getExposure = (ticker: string) => {
       if (totalVal <= 0) return 0;
       const match = rawHoldings.find((h: any) => 
@@ -17,12 +25,23 @@ export class WatchlistEngine {
       return parseFloat(((val / totalVal) * 100).toFixed(1));
     };
 
-    const nvdaExposure = getExposure("NVDA") || (userContext?.isDemoMode ? 30.0 : 0);
+    const nvdaExposure = getExposure("NVDA") || (userContext?.isDemoMode ? 66.7 : 0);
     const aaplExposure = getExposure("AAPL") || (userContext?.isDemoMode ? 15.0 : 0);
     const relianceExposure = getExposure("RELIANCE.NS") || getExposure("RELIANCE") || 0;
     const tcsExposure = getExposure("TCS.NS") || getExposure("TCS") || 0;
 
     const nowIso = new Date().toISOString();
+
+    // Determine Personal Action helper according to Financial Safety Order
+    const determineAction = (exposure: number, marketSignal: string): WatchlistItem['personalAction'] => {
+      if (monthsCovered < 3.0) return "BUILD EMERGENCY RESERVE";
+      if (exposure > 20.0) return "REDUCE CONCENTRATION";
+      if (marketSignal === "Bullish" || marketSignal === "Moderately Bullish") {
+        return exposure > 15.0 ? "HOLD" : "BUY";
+      }
+      if (marketSignal === "Bearish" || marketSignal === "Strong Downtrend") return "REDUCE";
+      return "HOLD";
+    };
 
     return [
       {
@@ -39,6 +58,8 @@ export class WatchlistEngine {
         rsi: 62.4,
         trend: "Bullish Trend",
         technicalSignal: "Technical Signal: Bullish",
+        marketSignal: "Bullish",
+        personalAction: determineAction(0, "Bullish"),
         explainableStatus: "Bullish Momentum",
         userPortfolioExposurePct: 0.0,
         relevanceLevel: "HIGH",
@@ -62,6 +83,8 @@ export class WatchlistEngine {
         rsi: 58.0,
         trend: "Moderate Uptrend",
         technicalSignal: "Technical Signal: Moderate Uptrend",
+        marketSignal: "Moderately Bullish",
+        personalAction: determineAction(relianceExposure, "Moderately Bullish"),
         explainableStatus: "Bullish Momentum",
         userPortfolioExposurePct: relianceExposure,
         relevanceLevel: relianceExposure > 10 ? "HIGH" : "MEDIUM",
@@ -85,6 +108,8 @@ export class WatchlistEngine {
         rsi: 48.5,
         trend: "Consolidation",
         technicalSignal: "Technical Signal: Neutral",
+        marketSignal: "Consolidating",
+        personalAction: determineAction(tcsExposure, "Consolidating"),
         explainableStatus: "Consolidating",
         userPortfolioExposurePct: tcsExposure,
         relevanceLevel: "MEDIUM",
@@ -107,7 +132,9 @@ export class WatchlistEngine {
         changePercent: -1.80,
         rsi: 64.5,
         trend: "High Volatility Uptrend",
-        technicalSignal: "Technical Signal: High Demand",
+        technicalSignal: "Technical Signal: Bullish Momentum",
+        marketSignal: "Bullish",
+        personalAction: determineAction(nvdaExposure, "Bullish"),
         explainableStatus: "High Volatility",
         userPortfolioExposurePct: nvdaExposure,
         relevanceLevel: nvdaExposure > 20 ? "HIGH" : "MEDIUM",
@@ -131,6 +158,8 @@ export class WatchlistEngine {
         rsi: 58.2,
         trend: "Strong Uptrend",
         technicalSignal: "Technical Signal: Strong Uptrend",
+        marketSignal: "Bullish",
+        personalAction: determineAction(aaplExposure, "Bullish"),
         explainableStatus: "Bullish Momentum",
         userPortfolioExposurePct: aaplExposure,
         relevanceLevel: "MEDIUM",
@@ -152,7 +181,7 @@ export class MarketBriefEngine {
     return {
       timestamp: new Date().toISOString(),
       marketOverview: "Indian & US markets showing tech sector resilience and steady DII institutional inflows.",
-      majorMovers: watchlist.map(w => ({ ticker: w.ticker, changePct: `${w.changePercent > 0 ? '+' : ''}${w.changePercent}%` })),
+      majorMovers: watchlist.map(w => ({ ticker: w.ticker, changePct: `${(w.changePercent || 0) > 0 ? '+' : ''}${w.changePercent}%` })),
       userPortfolioImpact: highRelevance.length > 0
         ? `NVIDIA (${highRelevance[0].changePercent}%) directly impacts your portfolio balance.`
         : "Portfolio exposure across monitored watchlist assets is balanced.",

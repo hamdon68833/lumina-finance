@@ -202,6 +202,8 @@ export interface WatchlistItem {
   rsi: number;
   trend: string;
   technicalSignal: string;
+  marketSignal?: "Bullish" | "Moderately Bullish" | "Neutral" | "Consolidating" | "Bearish" | "Strong Downtrend";
+  personalAction?: "BUY" | "HOLD" | "REDUCE" | "REDUCE CONCENTRATION" | "WAIT" | "BUILD EMERGENCY RESERVE" | "PAY DOWN DEBT" | "REVIEW ALLOCATION";
   explainableStatus: "Bullish Momentum" | "Neutral" | "High Volatility" | "Consolidating" | "Watch" | "Potential Risk" | "Potential Opportunity";
   userPortfolioExposurePct: number;
   relevanceLevel: "HIGH" | "MEDIUM" | "LOW";

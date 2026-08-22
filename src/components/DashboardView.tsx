@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import { MainHubType } from './Sidebar';
 import { formatINR, formatINRMonthly } from '../utils/formatters';
+import { NextBestActionBanner } from './NextBestActionBanner';
 
 interface DashboardViewProps {
   userContext: any;
@@ -158,6 +159,9 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
           </div>
         </div>
       </section>
+
+      {/* 1.5. NEXT BEST ACTION BANNER (Financial Safety Order Priority) */}
+      <NextBestActionBanner userContext={userContext} onActionClick={onNavigate} />
 
       {/* 2. COMPACT FINANCIAL SNAPSHOT (4-COLUMN GRID) — Pure White in Light Mode */}
       <section className="space-y-3">
