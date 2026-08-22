@@ -1317,7 +1317,7 @@ async function startServer() {
   const distPath = path.join(process.cwd(), "dist");
   const hasDist = fs.existsSync(path.join(distPath, "index.html"));
 
-  if (process.env.NODE_ENV === "production" || (hasDist && process.env.VITE_DEV !== "true")) {
+  if (process.env.NODE_ENV === "production") {
     app.use(express.static(distPath));
     app.get("*", (req, res) => {
       res.sendFile(path.join(distPath, "index.html"));
