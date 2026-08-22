@@ -215,10 +215,37 @@ export default function App() {
   const handleMarkRead = (alertId: string) => {
     setAlerts(prev => prev.map(a => a.id === alertId ? { ...a, isRead: true } : a));
     setUnreadAlertCount(prev => Math.max(0, prev - 1));
+    if (user?.id) {
+      fetch(`/api/alerts/${alertId}/read`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: user.id })
+      }).catch(() => {});
+    }
+  };
+
+  const handleMarkAllRead = () => {
+    setAlerts(prev => prev.map(a => ({ ...a, isRead: true })));
+    setUnreadAlertCount(0);
+    if (user?.id) {
+      fetch('/api/alerts/read-all', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: user.id })
+      }).catch(() => {});
+    }
   };
 
   const handleDismiss = (alertId: string) => {
     setAlerts(prev => prev.filter(a => a.id !== alertId));
+    setUnreadAlertCount(prev => Math.max(0, prev - 1));
+    if (user?.id) {
+      fetch(`/api/alerts/${alertId}`, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: user.id })
+      }).catch(() => {});
+    }
   };
 
   const handleAlertActionClick = (alert: SmartAlert) => {
@@ -475,6 +502,38 @@ export default function App() {
       <DocumentIntelligenceModal
         isOpen={isDocumentOpen}
         onClose={() => setIsDocumentOpen(false)}
+      />
+
+      {/* Proactive Notification Center Slide-over */}
+      <NotificationCenter
+        isOpen={isNotificationCenterOpen}
+        onClose={() => setIsNotificationCenterOpen(false)}
+        alerts={alerts}
+        unreadCount={unreadAlertCount}
+        onMarkRead={handleMarkRead}
+        onMarkAllRead={handleMarkAllRead}
+        onDismiss={handleDismiss}
+        onEvaluate={evaluateAlerts}
+        onTriggerDemo={async (demoType) => {
+          if (!user) return;
+          try {
+            const res = await fetch('/api/alerts/demo', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ userId: user.id, demoType })
+            });
+            if (res.ok) {
+              const data = await res.json();
+              if (data.alert) {
+                setAlerts(prev => [data.alert, ...prev.filter(a => a.id !== data.alert.id)]);
+                setUnreadAlertCount(prev => prev + 1);
+              }
+            }
+          } catch { /* fallback */ }
+        }}
+        onActionClick={(_action, alert) => handleAlertActionClick(alert)}
+        preferences={alertPreferences}
+        onUpdatePreferences={(newPrefs) => setAlertPreferences(prev => ({ ...prev, ...newPrefs }))}
       />
 
       {/* Smart Alert Action Panel Drawer */}
